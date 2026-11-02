@@ -71,11 +71,30 @@ th{background:var(--card);font-weight:600}
 #ans:empty{display:none}
 footer{margin-top:40px;padding-top:14px;border-top:1px solid var(--line);color:var(--mut);font-size:13px}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+.gen{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,330px),1fr));gap:24px;margin-top:14px}
+.gform,.gout{min-width:0}
+.gform h3{margin-top:18px}.gform h3:first-child{margin-top:0}
+.grow{display:flex;gap:6px;margin:6px 0;align-items:center}
+.grow.sub{padding-left:16px}
+.grow input[type=text],.grow select{flex:1;min-width:0;background:var(--card);color:var(--fg);border:1px solid var(--line);border-radius:6px;padding:8px 10px;font:inherit}
+.grow select{flex:0 1 auto;max-width:42%}
+.ibtn{font:500 14px var(--fb);color:var(--fg);background:var(--card);border:1px solid var(--line);border-radius:6px;padding:7px 11px;cursor:pointer}
+.ibtn.wide{margin-top:4px}
+.gpaper{min-height:120px;display:flex;align-items:center;justify-content:center}
+.gpaper svg{max-width:100%;height:auto}
+.gwarn{list-style:none;padding:0;display:grid;gap:6px;margin:10px 0}
+.gwarn li{padding:8px 12px;border-radius:6px;font-size:14px;max-width:none}
+.gwarn .w{background:var(--warn-s);border-left:4px solid var(--warn)}
+.gwarn .t{background:var(--pur-s);border-left:4px solid var(--pur)}
+.gwarn .ok{background:var(--teal-s);border-left:4px solid var(--teal)}
+.gact{display:flex;gap:6px;flex-wrap:wrap}
+pre{overflow-x:auto;background:var(--card);border:1px solid var(--line);border-radius:8px;padding:10px;font-size:13px}
+.mx{min-width:0}.mx td,.mx th{text-align:center}.mx td:first-child{text-align:left}
 </style>
-
-<style>html{-webkit-text-size-adjust:100%}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
 </head>
 <body>
+
+
 <div class="wrap">
 <header>
 <div class="brand"><img src="images/emav_logo.png" alt="EMAV, Escola de Mitjans Audiovisuals"></div><br>
@@ -88,6 +107,7 @@ footer{margin-top:40px;padding-top:14px;border-top:1px solid var(--line);color:v
 <footer>Apunts de Laura Trunas · EMAV</footer>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.3/dist/mermaid.min.js"></script>
 <script>
 var IMG=function(n,alt){return '<div class="paper"><img src="images/'+n+'.png" alt="'+alt+'"></div>'};
 var L=function(h,t){return '<a href="'+h+'" target="_blank" rel="noopener">'+t+'</a>'};
@@ -173,8 +193,227 @@ S.fonts={t:'Fonts',h:function(){return '<h2>Fonts i vídeos per ampliar</h2>'+
 '<h3>Als motors</h3>'+links([['https://docs.unity3d.com/Manual/AnimationStateMachines.html','Unity: Animation State Machines','per al diagrama d\'estats.'],['https://dev.epicgames.com/documentation/en-us/unreal-engine/overview-of-blueprints-visual-scripting-in-unreal-engine','Unreal: Overview of Blueprints Visual Scripting','l\'equivalent visual del diagrama d\'activitat.'],['https://dev.epicgames.com/documentation/en-us/unreal-engine/API/Plugins/StateTreeModule','Unreal: StateTree, referència de l\'API','comprova la versió que feu servir.']])+
 '<h3>Vídeos</h3>'+table(['Vídeo','Idioma','Diagrama'],[[L('https://www.youtube.com/watch?v=VjkCd2xAF4k','UML desde cero: Guía completa de tipos y ejemplos (Parte 1)'),'Castellà','Visió general dels diagrames'],[L('https://www.youtube.com/watch?v=4emxjxonNRI&t=23s','UML use case diagrams: Everything you need to know'),'Anglès','Casos d\'ús']])+'<p>Els dos vídeos es poden veure en castellà amb la veu doblada per IA: a YouTube, obre l\'engranatge, tria <em>Configuració → Pista d\'àudio</em> i selecciona <em>Español</em> (doblatge automàtic).</p>'}}
 
-var ORDER=['inici','casos','activitat','estats','classes','eines','errors','mini','fonts'];
-var HASH={inici:'inici',casos:'casos',activitat:'activitat',estats:'estats',classes:'classes',eines:'eines',errors:'errors',mini:'mini-guia',fonts:'fonts'};
+/* ---------- Generador de diagrames (Mermaid) ---------- */
+var GEN={};
+function gEsc(s){return String(s==null?"":s).replace(/"/g,"'").replace(/[\r\n]+/g," ").trim();}
+function gH(s){return String(s==null?"":s).replace(/&/g,"&amp;").replace(/"/g,"&quot;").replace(/</g,"&lt;");}
+function gInit(){
+  GEN.st={states:["Menú","Jugant","Pausa","Game over"],init:0,tr:[{f:0,e:"jugar",t:1},{f:1,e:"pausar",t:2},{f:2,e:"reprendre",t:1},{f:1,e:"vida = 0",t:3},{f:3,e:"tornar al menú",t:0}]};
+  GEN.ac={steps:[{k:"a",t:"Acostar-se a l'objecte"},{k:"d",t:"A l'abast?",fail:"No passa res"},{k:"a",t:"Prémer el botó d'acció"},{k:"d",t:"Inventari ple?",fail:"Mostrar avís"},{k:"a",t:"Afegir a l'inventari"}]};
+  var l={};[0,1,2,3].forEach(function(c){l["0-"+c]=1;});
+  GEN.uc={sys:"Videojoc clàssic",actors:["Jugador"],cases:["Iniciar partida","Moure's","Recollir objecte","Configurar opcions"],links:l};
+}
+gInit();
+GEN.svg={};GEN.seq={};GEN.timer={};
+var GKEYS=["st","ac","uc"];
+function gName(i){return GEN.st.states[i]||("Estat "+(i+1));}
+function gOpts(sel,withFinal){
+  var o=GEN.st.states.map(function(s,i){return '<option value="'+i+'"'+(sel===i?" selected":"")+'>'+gH(gName(i))+'</option>';}).join("");
+  if(withFinal)o+='<option value="-1"'+(sel===-1?" selected":"")+'>(final)</option>';
+  return o;
+}
+/* ---- formularis ---- */
+function gForm(k){
+  var h="";
+  if(k==="st"){
+    var g=GEN.st;
+    h+='<h3>1. Quins modes té l\'element?</h3><p class="cap">Un estat per línia. Posa un adjectiu o un gerundi (Patrullant, Pausa).</p>';
+    g.states.forEach(function(s,i){h+='<div class="grow"><input type="text" data-k="st" data-f="sn" data-i="'+i+'" value="'+gH(s)+'" placeholder="Estat '+(i+1)+'" aria-label="Estat '+(i+1)+'"><button class="ibtn" data-op="del-state" data-i="'+i+'" aria-label="Treu l\'estat">×</button></div>';});
+    h+='<button class="ibtn wide" data-op="add-state">+ Afegeix un estat</button>';
+    h+='<h3>2. Quin és l\'estat inicial?</h3><div class="grow"><select data-k="st" data-f="init" aria-label="Estat inicial">'+gOpts(g.init,false)+'</select></div>';
+    h+='<h3>3. Què fa que canviï d\'estat?</h3><p class="cap">De quin estat, quin esdeveniment, a quin estat. Si l\'element deixa d\'existir o l\'experiència acaba, tria (final).</p>';
+    g.tr.forEach(function(t,i){h+='<div class="grow"><select data-k="st" data-f="from" data-i="'+i+'" aria-label="De">'+gOpts(t.f,false)+'</select><input type="text" data-k="st" data-f="ev" data-i="'+i+'" value="'+gH(t.e)+'" placeholder="esdeveniment" aria-label="Esdeveniment"><select data-k="st" data-f="to" data-i="'+i+'" aria-label="A">'+gOpts(t.t,true)+'</select><button class="ibtn" data-op="del-tr" data-i="'+i+'" aria-label="Treu la transició">×</button></div>';});
+    h+='<button class="ibtn wide" data-op="add-tr">+ Afegeix una transició</button>';
+  }
+  if(k==="ac"){
+    var a=GEN.ac;
+    h+='<h3>Quins són els passos de l\'acció?</h3><p class="cap">Un pas per línia, de dalt a baix. Tria si és una <strong>acció</strong> o una <strong>decisió</strong> (pregunta sí/no). A les decisions, escriu què passa si la resposta és «no».</p>';
+    a.steps.forEach(function(s,i){
+      h+='<div class="grow"><select data-k="ac" data-f="kind" data-i="'+i+'" aria-label="Tipus de pas"><option value="a"'+(s.k==="a"?" selected":"")+'>Acció</option><option value="d"'+(s.k==="d"?" selected":"")+'>Decisió</option></select><input type="text" data-k="ac" data-f="txt" data-i="'+i+'" value="'+gH(s.t)+'" placeholder="'+(s.k==="d"?"Pregunta?":"Verb + complement")+'" aria-label="Text del pas">';
+      h+='<button class="ibtn" data-op="up-step" data-i="'+i+'" aria-label="Puja">↑</button><button class="ibtn" data-op="down-step" data-i="'+i+'" aria-label="Baixa">↓</button><button class="ibtn" data-op="del-step" data-i="'+i+'" aria-label="Treu el pas">×</button></div>';
+      if(s.k==="d")h+='<div class="grow sub"><span class="cap">si «no»:</span><input type="text" data-k="ac" data-f="fail" data-i="'+i+'" value="'+gH(s.fail||"")+'" placeholder="què passa si falla? (acció)" aria-label="Què passa si la resposta és no"></div>';
+    });
+    h+='<button class="ibtn wide" data-op="add-step">+ Afegeix un pas</button>';
+  }
+  if(k==="uc"){
+    var u=GEN.uc;
+    h+='<h3>1. Quin sistema modeles?</h3><div class="grow"><input type="text" data-k="uc" data-f="sys" value="'+gH(u.sys)+'" placeholder="Nom del joc o de l\'experiència" aria-label="Nom del sistema"></div>';
+    h+='<h3>2. Qui hi interactua (actors)?</h3><p class="cap">Persones o sistemes externs. Els enemics amb IA no són actors: són part del sistema.</p>';
+    u.actors.forEach(function(s,i){h+='<div class="grow"><input type="text" data-k="uc" data-f="actor" data-i="'+i+'" value="'+gH(s)+'" placeholder="Actor" aria-label="Actor '+(i+1)+'"><button class="ibtn" data-op="del-actor" data-i="'+i+'" aria-label="Treu l\'actor">×</button></div>';});
+    h+='<button class="ibtn wide" data-op="add-actor">+ Afegeix un actor</button>';
+    h+='<h3>3. Què vol aconseguir cada actor?</h3><p class="cap">Un objectiu per línia, amb verb + complement (Recollir objecte).</p>';
+    u.cases.forEach(function(s,i){h+='<div class="grow"><input type="text" data-k="uc" data-f="case" data-i="'+i+'" value="'+gH(s)+'" placeholder="Cas d\'ús" aria-label="Cas d\'ús '+(i+1)+'"><button class="ibtn" data-op="del-case" data-i="'+i+'" aria-label="Treu el cas d\'ús">×</button></div>';});
+    h+='<button class="ibtn wide" data-op="add-case">+ Afegeix un cas d\'ús</button>';
+    h+='<h3>4. Qui participa en cada cas?</h3><div class="tblw"><table class="mx"><thead><tr><th>Cas d\'ús</th>'+u.actors.map(function(s,i){return '<th data-lab="a'+i+'">'+gH(s||"Actor "+(i+1))+'</th>';}).join("")+'</tr></thead><tbody>';
+    u.cases.forEach(function(c,ci){h+='<tr><td data-lab="c'+ci+'">'+gH(c||"Cas "+(ci+1))+'</td>'+u.actors.map(function(_,ai){return '<td><input type="checkbox" data-k="uc" data-f="link" data-a="'+ai+'" data-c="'+ci+'"'+(u.links[ai+"-"+ci]?" checked":"")+' aria-label="Participa"></td>';}).join("")+'</tr>';});
+    h+='</tbody></table></div>';
+  }
+  return h;
+}
+/* ---- codi Mermaid i avisos ---- */
+function gCode(k){
+  var L=[],W=[],T=[];
+  if(k==="st"){
+    var g=GEN.st;
+    if(!g.states.length)return {code:"",warn:["Afegeix almenys un estat."],tip:[]};
+    L.push("stateDiagram-v2","  direction LR");
+    g.states.forEach(function(_,i){L.push('  state "'+gEsc(gName(i))+'" as S'+i);});
+    L.push("  [*] --> S"+g.init);
+    g.tr.forEach(function(t){L.push("  S"+t.f+" --> "+(t.t<0?"[*]":"S"+t.t)+(gEsc(t.e)?": "+gEsc(t.e):""));});
+    g.states.forEach(function(_,i){
+      if(!g.states[i].trim())W.push("L'estat "+(i+1)+" no té nom.");
+      if(!g.tr.some(function(t){return t.f===i;}))W.push("«"+gName(i)+"» no té cap sortida. Afegeix una transició o fes-hi arribar un final.");
+    });
+    g.tr.forEach(function(t){if(!gEsc(t.e))W.push("La transició de «"+gName(t.f)+"» a «"+(t.t<0?"final":gName(t.t))+"» no té etiqueta (esdeveniment).");});
+    var seen={},q=[g.init];seen[g.init]=1;
+    while(q.length){var x=q.shift();g.tr.forEach(function(t){if(t.f===x&&t.t>=0&&!seen[t.t]){seen[t.t]=1;q.push(t.t);}});}
+    g.states.forEach(function(_,i){if(!seen[i])W.push("No es pot arribar a «"+gName(i)+"» des de l'estat inicial.");});
+    if(!g.states.some(function(s){return /error|connexi|sensor|falla|bug/i.test(s);}))T.push("Pensa-hi: què passa si falla la connexió, el sensor o un recurs? Potser et cal un estat d'error.");
+    return {code:L.join("\n"),warn:W,tip:T};
+  }
+  if(k==="ac"){
+    var s=GEN.ac.steps;
+    if(!s.length)return {code:"",warn:["Afegeix almenys un pas."],tip:[]};
+    L.push("flowchart TD","  S((inici))","  F(((final)))");
+    var id=function(i){return (s[i].k==="d"?"D":"N")+i;},acts=[],decs=[],fails=[];
+    s.forEach(function(p,i){var t=gEsc(p.t)||(p.k==="d"?"Decisió?":"Pas "+(i+1));
+      if(p.k==="d"){L.push("  D"+i+'{"'+t+'"}');decs.push("D"+i);}else{L.push("  N"+i+'(["'+t+'"])');acts.push("N"+i);}});
+    L.push("  S --> "+id(0));
+    s.forEach(function(p,i){var nx=i+1<s.length?id(i+1):"F";
+      if(p.k==="d"){L.push("  "+id(i)+' -->|"sí"| '+nx);
+        if(gEsc(p.fail)){L.push("  X"+i+'(["'+gEsc(p.fail)+'"])');fails.push("X"+i);L.push("  "+id(i)+' -->|"no"| X'+i+" --> F");}
+        else{L.push("  "+id(i)+' -->|"no"| F');W.push("Què passa si la resposta a «"+(gEsc(p.t)||"decisió")+"» és no? Escriu l'acció del camí que falla.");}
+      }else{L.push("  "+id(i)+" --> "+nx);
+        if(/ i /i.test(" "+p.t+" "))W.push("«"+gEsc(p.t)+"» porta una «i»: potser són dues accions (una acció per caixa).");}
+      if(!gEsc(p.t))W.push("El pas "+(i+1)+" no té text.");
+    });
+    L.push("  classDef act fill:#e1f5ee,stroke:#0f6e56,color:#04342c","  classDef dec fill:#eeedfe,stroke:#534ab7,color:#26215c","  classDef bad fill:#f1efe8,stroke:#5f5e5a,color:#2c2c2a","  classDef dot fill:#444441,stroke:#444441,color:#ffffff");
+    if(acts.length)L.push("  class "+acts.join(",")+" act");
+    if(decs.length)L.push("  class "+decs.join(",")+" dec");
+    if(fails.length)L.push("  class "+fails.join(",")+" bad");
+    L.push("  class S,F dot");
+    if(!decs.length)T.push("Cap decisió: pensa si hi ha algun moment en què la resposta pot ser «no» i què passa llavors.");
+    if(s.length>12)T.push("Passa de 12 elements: considera dividir-ho en dos diagrames.");
+    return {code:L.join("\n"),warn:W,tip:T};
+  }
+  var u=GEN.uc;
+  if(!u.cases.length||!u.actors.length)return {code:"",warn:["Afegeix almenys un actor i un cas d'ús."],tip:[]};
+  L.push("flowchart LR");
+  u.actors.forEach(function(a,i){L.push("  A"+i+'["'+(gEsc(a)||"Actor "+(i+1))+'"]');});
+  L.push('  subgraph SYS["'+(gEsc(u.sys)||"Sistema")+'"]');
+  u.cases.forEach(function(c,i){L.push("    C"+i+'(["'+(gEsc(c)||"Cas "+(i+1))+'"])');});
+  L.push("  end");
+  u.actors.forEach(function(_,ai){u.cases.forEach(function(_,ci){if(u.links[ai+"-"+ci])L.push("  A"+ai+" --- C"+ci);});});
+  L.push("  classDef actor fill:#ffffff,stroke:#444441,color:#2c2c2a","  classDef uc fill:#e1f5ee,stroke:#0f6e56,color:#04342c");
+  L.push("  class "+u.actors.map(function(_,i){return "A"+i;}).join(",")+" actor");
+  L.push("  class "+u.cases.map(function(_,i){return "C"+i;}).join(",")+" uc");
+  u.actors.forEach(function(a,ai){if(!u.cases.some(function(_,ci){return u.links[ai+"-"+ci];}))W.push("«"+(gEsc(a)||"Actor "+(ai+1))+"» no participa en cap cas d'ús.");});
+  u.cases.forEach(function(c,ci){
+    if(!u.actors.some(function(_,ai){return u.links[ai+"-"+ci];}))W.push("«"+(gEsc(c)||"Cas "+(ci+1))+"» no té cap actor.");
+    if(/^(calcular|comprovar|actualitzar|carregar|validar|processar)/i.test(gEsc(c)))W.push("«"+gEsc(c)+"» sembla un pas intern, no un objectiu de l'actor: potser va a l'activitat.");
+  });
+  if(u.cases.length>10)T.push("Tens més de 10 casos d'ús: agrupa'ls o divideix-los.");
+  if(u.actors.some(function(a){return /enemic|npc|bot|ia\b/i.test(a);}))T.push("Els enemics amb IA són part del sistema, no actors.");
+  return {code:L.join("\n"),warn:W,tip:T};
+}
+/* ---- dibuix ---- */
+function gDraw(k){
+  var r=gCode(k),box=document.getElementById("gp-"+k),w=document.getElementById("gw-"+k),c=document.getElementById("gc-"+k);
+  c.textContent=r.code||"";
+  var hh="";
+  r.warn.forEach(function(x){hh+='<li class="w">'+gH(x)+'</li>';});
+  r.tip.forEach(function(x){hh+='<li class="t">'+gH(x)+'</li>';});
+  if(!r.warn.length&&!r.tip.length)hh='<li class="ok">Cap avís automàtic. Repassa-ho igualment amb la llista de l\'apartat «Errors i revisió».</li>';
+  w.innerHTML=hh;
+  if(!r.code){box.innerHTML='<p class="cap">Respon les preguntes per veure el diagrama.</p>';GEN.svg[k]="";return;}
+  if(!window.mermaid){box.innerHTML='<p class="cap">No s\'ha pogut carregar el dibuixador (cal connexió). El codi de sota continua sent vàlid.</p>';return;}
+  var n=(GEN.seq[k]=(GEN.seq[k]||0)+1);
+  mermaid.render("mm"+k+n,r.code).then(function(o){
+    if(GEN.seq[k]!==n)return;
+    box.innerHTML=o.svg;GEN.svg[k]=o.svg;
+  }).catch(function(){
+    if(GEN.seq[k]!==n)return;
+    var e=document.getElementById("dmm"+k+n);if(e)e.remove();
+    box.innerHTML='<p class="cap">Encara no es pot dibuixar. Revisa que tots els camps tinguin text.</p>';GEN.svg[k]="";
+  });
+}
+function gSoon(k){clearTimeout(GEN.timer[k]);GEN.timer[k]=setTimeout(function(){gDraw(k);},200);}
+function gRender(k){document.getElementById("gf-"+k).innerHTML=gForm(k);gDraw(k);}
+function gDl(name,blob){var a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();a.remove();}
+function gPng(k,msg){
+  var s=GEN.svg[k];if(!s){msg("Encara no hi ha diagrama.");return;}
+  var m=s.match(/viewBox="([\d.\-\s]+)"/);if(!m){msg("No es pot exportar a PNG.");return;}
+  var p=m[1].trim().split(/\s+/).map(Number),W=Math.ceil(p[2]),H=Math.ceil(p[3]);
+  var s2=s.replace(/width="100%"/,'width="'+W+'"').replace(/<svg /,'<svg height="'+H+'" ');
+  var img=new Image();
+  img.onload=function(){try{var cv=document.createElement("canvas");cv.width=W*2;cv.height=H*2;var x=cv.getContext("2d");x.fillStyle="#fff";x.fillRect(0,0,cv.width,cv.height);x.drawImage(img,0,0,cv.width,cv.height);cv.toBlob(function(b){if(b)gDl("diagrama-"+k+".png",b);else msg("No s'ha pogut crear el PNG. Descarrega l'SVG.");});}catch(e){msg("No s'ha pogut crear el PNG. Descarrega l'SVG.");}};
+  img.onerror=function(){msg("No s'ha pogut crear el PNG. Descarrega l'SVG.");};
+  img.src="data:image/svg+xml;charset=utf-8,"+encodeURIComponent(s2);
+}
+/* ---- edició ---- */
+function gUpd(t){
+  var k=t.dataset.k,f=t.dataset.f,i=+t.dataset.i,v=t.value;
+  if(k==="st"){var g=GEN.st;
+    if(f==="sn"){g.states[i]=v;document.querySelectorAll("#gf-st option").forEach(function(o){var n=+o.value;if(n>=0)o.textContent=gName(n);});}
+    else if(f==="ev")g.tr[i].e=v;else if(f==="from")g.tr[i].f=+v;else if(f==="to")g.tr[i].t=+v;else if(f==="init")g.init=+v;}
+  if(k==="ac"){var a=GEN.ac.steps;
+    if(f==="kind"){a[i].k=v;if(v==="d"&&a[i].fail==null)a[i].fail="";gRender("ac");return;}
+    if(f==="txt")a[i].t=v;else if(f==="fail")a[i].fail=v;}
+  if(k==="uc"){var u=GEN.uc;
+    if(f==="sys")u.sys=v;
+    else if(f==="actor"){u.actors[i]=v;document.querySelectorAll('[data-lab="a'+i+'"]').forEach(function(e){e.textContent=v||"Actor "+(i+1);});}
+    else if(f==="case"){u.cases[i]=v;document.querySelectorAll('[data-lab="c'+i+'"]').forEach(function(e){e.textContent=v||"Cas "+(i+1);});}
+    else if(f==="link"){u.links[t.dataset.a+"-"+t.dataset.c]=t.checked?1:0;}}
+  gSoon(k);
+}
+function gOp(b){
+  var op=b.dataset.op,i=+b.dataset.i,g=GEN.st,a=GEN.ac.steps,u=GEN.uc,k;
+  if(op==="add-state"){g.states.push("");k="st";}
+  else if(op==="del-state"){g.states.splice(i,1);g.tr=g.tr.filter(function(t){return t.f!==i&&t.t!==i;}).map(function(t){return {f:t.f>i?t.f-1:t.f,e:t.e,t:t.t>i?t.t-1:t.t};});g.init=g.init===i?0:(g.init>i?g.init-1:g.init);k="st";}
+  else if(op==="add-tr"){g.tr.push({f:0,e:"",t:Math.min(1,g.states.length-1)});k="st";}
+  else if(op==="del-tr"){g.tr.splice(i,1);k="st";}
+  else if(op==="add-step"){a.push({k:"a",t:""});k="ac";}
+  else if(op==="del-step"){a.splice(i,1);k="ac";}
+  else if(op==="up-step"&&i>0){var x=a[i];a[i]=a[i-1];a[i-1]=x;k="ac";}
+  else if(op==="down-step"&&i<a.length-1){var y=a[i];a[i]=a[i+1];a[i+1]=y;k="ac";}
+  else if(op==="add-actor"){u.actors.push("");k="uc";}
+  else if(op==="del-actor"){u.actors.splice(i,1);var nl={};Object.keys(u.links).forEach(function(key){var p=key.split("-").map(Number);if(!u.links[key]||p[0]===i)return;nl[(p[0]>i?p[0]-1:p[0])+"-"+p[1]]=1;});u.links=nl;k="uc";}
+  else if(op==="add-case"){u.cases.push("");k="uc";}
+  else if(op==="del-case"){u.cases.splice(i,1);var n2={};Object.keys(u.links).forEach(function(key){var p=key.split("-").map(Number);if(!u.links[key]||p[1]===i)return;n2[p[0]+"-"+(p[1]>i?p[1]-1:p[1])]=1;});u.links=n2;k="uc";}
+  if(k)gRender(k);
+}
+function gAct(b){
+  var k=b.dataset.g,act=b.dataset.a,msg=function(t){var m=document.getElementById("gm-"+k);m.textContent=t;};
+  if(act==="copy"){var t=document.getElementById("gc-"+k).textContent;
+    var ok=function(){msg("Codi copiat.");};
+    var fb=function(){var r=document.createRange();r.selectNodeContents(document.getElementById("gc-"+k));var s=window.getSelection();s.removeAllRanges();s.addRange(r);msg("Selecciona i copia el codi amb Ctrl+C.");};
+    try{navigator.clipboard.writeText(t).then(ok,fb);}catch(e){fb();}}
+  else if(act==="svg"){if(!GEN.svg[k]){msg("Encara no hi ha diagrama.");return;}gDl("diagrama-"+k+".svg",new Blob([GEN.svg[k]],{type:"image/svg+xml"}));msg("");}
+  else if(act==="png"){msg("");gPng(k,msg);}
+  else if(act==="reset"){var keep={st:GEN.st,ac:GEN.ac,uc:GEN.uc};gInit();gRender(k);msg("Exemple restaurat.");}
+}
+S.genera={t:"Genera el teu UML",h:function(){
+  var h='<h2>Genera el teu UML</h2><p class="lead">Respon les preguntes i la pàgina dibuixa el diagrama i en genera el codi (Mermaid). Els exemples són orientatius: canvia\'ls pels del teu projecte.</p>';
+  h+='<div class="seg" id="gseg"><button data-g="st" aria-pressed="true">Estats</button><button data-g="ac" aria-pressed="false">Activitat</button><button data-g="uc" aria-pressed="false">Casos d\'ús</button></div>';
+  GKEYS.forEach(function(k){
+    h+='<div class="gen" data-g="'+k+'"'+(k==="st"?"":" hidden")+'><div class="gform" id="gf-'+k+'"></div><div class="gout"><div class="paper gpaper" id="gp-'+k+'"></div><ul class="gwarn" id="gw-'+k+'"></ul><div class="gact"><button class="ibtn" data-a="copy" data-g="'+k+'">Copia el codi</button><button class="ibtn" data-a="svg" data-g="'+k+'">Descarrega SVG</button><button class="ibtn" data-a="png" data-g="'+k+'">Descarrega PNG</button><button class="ibtn" data-a="reset" data-g="'+k+'">Torna a l\'exemple</button></div><p class="cap" id="gm-'+k+'" role="status"></p><details><summary>Codi Mermaid</summary><pre id="gc-'+k+'"></pre></details></div></div>';
+  });
+  h+='<p class="cap">El diagrama té disseny automàtic: l\'ordre i la forma no seran idèntics als esquemes dels apunts. Si vols retocar-lo, copia el codi a <a href="https://mermaid.live" target="_blank" rel="noopener">mermaid.live</a> o enganxa\'l a draw.io.</p>';
+  return h;}};
+function gStart(){
+  if(window.mermaid)mermaid.initialize({startOnLoad:false,securityLevel:"strict",theme:"neutral",flowchart:{htmlLabels:false,curve:"basis"},fontFamily:"IBM Plex Sans, Segoe UI, sans-serif"});
+  GKEYS.forEach(gRender);
+  document.getElementById("gseg").addEventListener("click",function(e){var b=e.target.closest("button");if(!b)return;
+    Array.prototype.forEach.call(this.children,function(x){x.setAttribute("aria-pressed",x===b?"true":"false");});
+    Array.prototype.forEach.call(document.querySelectorAll(".gen"),function(d){d.hidden=d.dataset.g!==b.dataset.g;});});
+  var sec=document.getElementById("s-genera");
+  sec.addEventListener("input",function(e){if(e.target.dataset&&e.target.dataset.f&&e.target.type!=="checkbox"&&e.target.tagName!=="SELECT")gUpd(e.target);});
+  sec.addEventListener("change",function(e){if(e.target.dataset&&e.target.dataset.f&&(e.target.type==="checkbox"||e.target.tagName==="SELECT"))gUpd(e.target);});
+  sec.addEventListener("click",function(e){var b=e.target.closest("button");if(!b)return;if(b.dataset.op)gOp(b);else if(b.dataset.a)gAct(b);});
+}
+
+var ORDER=['inici','casos','activitat','estats','classes','eines','errors','mini','genera','fonts'];
+var HASH={inici:'inici',casos:'casos',activitat:'activitat',estats:'estats',classes:'classes',eines:'eines',errors:'errors',mini:'mini-guia',genera:'genera',fonts:'fonts'};
 var CK1=['Cada diagrama té un títol i diu de quin cas d\'ús, element o escenari és.','Faig servir només les formes estàndard d\'UML d\'aquest tema.','Cada fletxa té etiqueta (esdeveniment o sí/no).','Als casos d\'ús, els actors són fora del rectangle i els casos d\'ús, a dins.','Cada rombe té totes les sortides etiquetades.','Cada camí acaba en un final (o torna al repòs, si és una experiència interactiva).','Cap estat queda sense sortida, excepte el final.','He pensat què passa quan alguna cosa falla.','He dibuixat què passa si falla la connexió, el sensor o un recurs.','Algú que no coneix el projecte l\'ha entès sense explicacions.','L\'he exportat en el format que es demana (PNG, PDF) i conservo el fitxer font.'];
 var CK2=['Cada diagrama té un títol.','Cada fletxa té etiqueta.','Els actors són fora del rectangle i els casos d\'ús, a dins.','Cada rombe té totes les sortides etiquetades.','Cap estat queda sense sortida (excepte el final).','He dibuixat què passa si falla la connexió, el sensor o un recurs.','Algú altre l\'ha entès sense que li expliquis res.'];
 function store(k,v){try{if(v===undefined)return JSON.parse(localStorage.getItem(k)||'{}');localStorage.setItem(k,JSON.stringify(v))}catch(e){return {}}}
@@ -199,6 +438,7 @@ document.addEventListener('click',function(e){
   if(sl){var p=sl.dataset.a.split('|');document.getElementById('ans').innerHTML='<p style="margin:0 0 8px">'+p[1]+'</p><button class="go" data-go="'+p[0]+'">Anar a la secció</button>'}
   var gb=e.target.closest('[data-go]');if(gb)go(gb.dataset.go,true)});
 checklist('chk1',CK1,'pbar','uml-ck1');checklist('chk2',CK2,'pbar2','uml-ck2');
+gStart();
 fromHash();
 </script>
 
